@@ -447,3 +447,530 @@ let implicitString: String = assumedString  // 不需要感叹号
 //}
 //print("zero!")
 
+/**
+ 闭包 ----------
+ */
+
+//let names = ["Chris", "Alex", "Ewa", "Barry", "Daniella"]
+//func backward (_ s1: String, _ s2: String) -> Bool {
+//    return s1 > s2
+//}
+//
+//let newnames = names.sorted(by: backward)
+//print(newnames)
+
+// 闭包表达式语法
+/**
+ { (parameters) -> return type in
+     statements
+ }
+ */
+//let reversedNames = names.sorted(by: {
+//    (s1: String, s2: String) -> Bool in
+//    return s1 > s2
+//})
+
+// 根据上下文推断类型
+//let reversedNames = names.sorted(by: { s1, s2 in return s1 > s2 } )
+
+// 单表达式闭包的隐式返回  单行表达式闭包可以通过省略 return 关键字来隐式返回单行表达式的结果
+//let reversedNames = names.sorted(by: { s1, s2 in  s1 > s2 } )
+
+// 参数名称缩写 通过 $0，$1，$2 来顺序调用闭包的参数
+//let reversedNames = names.sorted(by: { $0 > $1 } )
+
+// 运算符
+//let reversedNames = names.sorted(by: > )
+
+
+// 尾随闭包
+// 如果你需要将一个很长的闭包表达式作为最后一个参数传递给函数，将这个闭包替换成为尾随闭包的形式很有用
+//let reversedNames = names.sorted() { $0 > $1 }
+//print(reversedNames)
+
+//let digitNames = [
+//    0: "Zero", 1: "One", 2: "Two",   3: "Three", 4: "Four",
+//    5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine"
+//]
+//let numbers = [16, 58, 510]
+//
+//let strings = numbers.map{
+//    (number) -> String in
+//    var number = number
+//    var output = ""
+//    repeat{
+//        output = digitNames[number % 10]! + output
+//        number /= 10
+//    }while number > 0
+//    return output
+//}
+//print(strings)
+
+// 值捕获
+//func makeIncrementer(forIncrement amount: Int) -> () -> Int {
+//    var runningTotal = 0
+//    func incrementer() -> Int {
+//        runningTotal += amount
+//        return runningTotal
+//    }
+//    return incrementer
+//}
+//
+//let incrementByTen = makeIncrementer(forIncrement: 10)
+//
+//incrementByTen();
+//incrementByTen();
+//incrementByTen();
+//let incrementBySeven = makeIncrementer(forIncrement: 7)
+//incrementBySeven()
+
+// 闭包是引用类型
+//let alsoIncrementByTen = incrementByTen
+//alsoIncrementByTen()
+//// 返回的值为50
+
+// 逃逸闭包
+//var completionHandlers: [() -> Void] = []
+//func someFunctionWithEscapingClosure(completionHandler: @escaping () -> Void) {
+//    completionHandlers.append(completionHandler)
+//}
+//func someFunctionWithNonescapingClosure(closure: () -> Void) {
+//    closure()
+//}
+//
+//class SomeClass {
+//    var x = 10
+//    func doSomething() {
+//        someFunctionWithEscapingClosure { self.x = 100 }
+//        someFunctionWithNonescapingClosure { x = 200 }
+//    }
+//}
+//
+//let instance = SomeClass()
+//instance.doSomething()
+//print(instance.x)
+//// 打印出“200”
+//completionHandlers.first?()
+//print(instance.x)
+//// 打印出“100”
+
+// 自动闭包
+//var customersInLine = ["Chris", "Alex", "Ewa", "Barry", "Daniella"]
+//print(customersInLine.count)
+//// 打印出“5”
+//
+//let customerProvider = { customersInLine.remove(at: 0) }
+//print(customersInLine.count)
+//// 打印出“5”
+//
+//print("Now serving \(customerProvider())!")
+//// 打印出“Now serving Chris!”
+//print(customersInLine.count)
+//// 打印出“4”
+//
+//// customersInLine i= ["Barry", "Daniella"]
+//var customerProviders: [() -> String] = []
+//func collectCustomerProviders(_ customerProvider: @autoclosure @escaping () -> String) {
+//    customerProviders.append(customerProvider)
+//}
+//collectCustomerProviders(customersInLine.remove(at: 0))
+//collectCustomerProviders(customersInLine.remove(at: 0))
+//
+//print("Collected \(customerProviders.count) closures.")
+//// 打印“Collected 2 closures.”
+//for customerProvider in customerProviders {
+//    print("Now serving \(customerProvider())!")
+//}
+//// 打印“Now serving Barry!”
+//// 打印“Now serving Daniella!”
+
+/**
+ 枚举 -----------
+ */
+//enum CompassPoint {
+//    case north
+//    case south
+//    case east
+//    case west
+//}
+//enum Planet {
+//    case mercury, venus, earth, mars, jupiter, saturn, uranus, neptune
+//}
+//var directionToHead = CompassPoint.west
+//directionToHead = .south
+//
+//// 使用 Switch
+//directionToHead = .south
+//switch directionToHead {
+//case .north:
+//    print("Lots of planets have a north")
+//case .south:
+//    print("Watch out for penguins")
+//case .east:
+//    print("Where the sun rises")
+//case .west:
+//    print("Where the skies are blue")
+//}
+// 打印“Watch out for penguins”
+
+// 枚举成员的遍历
+//enum Beverage: CaseIterable {
+//    case coffee, tea, juice
+//}
+//let numberOfChoices = Beverage.allCases.count
+//for beverage in Beverage.allCases {
+//    print(beverage)
+//}
+
+// 关联值
+//enum Barcode {
+//    case upc(Int, Int, Int, Int)
+//    case qrCode(String)
+//}
+//var productBarcode = Barcode.upc(8, 85909, 51226, 3)
+//productBarcode = .qrCode("ABCDEFGHIJKLMNOP")
+//switch productBarcode {
+//case .upc(let numberSystem, let manufacturer, let product, let check):
+//    print("UPC: \(numberSystem), \(manufacturer), \(product), \(check).")
+//case .qrCode(let productCode):
+//    print("QR code: \(productCode).")
+//}
+//
+//switch productBarcode {
+//case let .upc(numberSystem, manufacturer, product, check):
+//    print("UPC: \(numberSystem), \(manufacturer), \(product), \(check).")
+//case let .qrCode(productCode):
+//    print("QR code: \(productCode).")
+//}
+
+// 原始值
+// 原始值的隐式赋值
+// 使用原始值初始化枚举实例
+
+// 递归枚举
+//indirect enum ArithmeticExpression {
+//    case number(Int)
+//    case addition(ArithmeticExpression, ArithmeticExpression)
+//    case multiplication(ArithmeticExpression, ArithmeticExpression)
+//}
+//let five = ArithmeticExpression.number(5)
+//let four = ArithmeticExpression.number(4)
+//let sum = ArithmeticExpression.addition(five, four)
+//let product = ArithmeticExpression.multiplication(sum, ArithmeticExpression.number(2))
+//
+//func evaluate(_ expression: ArithmeticExpression) -> Int {
+//    switch expression {
+//    case let .number(value):
+//        return value
+//    case let .addition(left, right):
+//        return evaluate(left) + evaluate(right)
+//    case let .multiplication(left, right):
+//        return evaluate(left) * evaluate(right)
+//    }
+//}
+//
+//print(evaluate(product))
+
+
+/**
+ 类和结构体 -----------------
+ */
+
+// 类型定义的语法
+// 结构体
+struct Resolution {
+    var width = 0
+    var height = 0
+}
+// 类
+class VideoMode {
+    var resolution = Resolution()
+    var interlaced = false
+    var frameRate = 0.0
+    var name: String?
+}
+// 结构体和类的实例
+let someResolution = Resolution();
+let someVideoMode = VideoMode();
+// 属性访问
+someResolution.height
+someVideoMode.resolution.height
+// 结构体类型的成员逐一构造器
+let veg = Resolution(width: 640, height: 480)
+
+// 结构体和枚举是指类型
+// 类是引用类型
+// 恒等运算符
+// 指针 ？
+
+/**
+ 属性 ---------------------------
+ */
+// 存储属性
+//struct FixedLengthRange {
+//    var firstValue: Int
+//    let length: Int
+//}
+//var rangeOfThreeItems = FixedLengthRange(firstValue: 0, length: 3)
+//// 该区间表示整数 0，1，2
+//rangeOfThreeItems.firstValue = 6
+// 该区间现在表示整数 6，7，8
+// 常量结构体实例的存储属性
+//let rangeOfFourItems = FixedLengthRange(firstValue: 0, length: 4)
+//// 该区间表示整数 0，1，2，3
+//rangeOfFourItems.firstValue = 6
+//// 尽管 firstValue 是个可变属性，但这里还是会报错
+// 延时加载存储属性
+//class DataImporter {
+//    /*
+//    DataImporter 是一个负责将外部文件中的数据导入的类。
+//    这个类的初始化会消耗不少时间。
+//    */
+//    var fileName = "data.txt"
+//    // 这里会提供数据导入功能
+//}
+//
+//class DataManager {
+//    lazy var importer = DataImporter()
+//    var data = [String]()
+//    // 这里会提供数据管理功能
+//}
+//
+//let manager = DataManager()
+//manager.data.append("Some data")
+//manager.data.append("Some more data")
+//// DataImporter 实例的 importer 属性还没有被创建
+//print(manager.importer.fileName)
+//// DataImporter 实例的 importer 属性现在被创建了
+//// 输出“data.txt”
+// 存储属性和实例变量
+// 计算属性
+struct Point {
+    var x = 0.0, y = 0.0
+}
+struct Size {
+    var width = 0.0, height = 0.0
+}
+struct Rect {
+    var origin = Point()
+    var size = Size()
+    var center: Point {
+        get {
+            let centerX = origin.x + (size.width / 2)
+            let centerY = origin.y + (size.height / 2)
+            return Point(x: centerX, y: centerY)
+        }
+        set(newCenter) {
+            origin.x = newCenter.x - (size.width / 2)
+            origin.y = newCenter.y - (size.height / 2)
+        }
+    }
+}
+var square = Rect(origin: Point(x: 0.0, y: 0.0),
+    size: Size(width: 10.0, height: 10.0))
+let initialSquareCenter = square.center
+square.center = Point(x: 15.0, y: 15.0)
+print("square.origin is now at (\(square.origin.x), \(square.origin.y))")
+// 简化 Setter 声明  可以使用默认名称 newValue
+struct AlternativeRect {
+    var origin = Point()
+    var size = Size()
+    var center: Point {
+        get {
+            let centerX = origin.x + (size.width / 2)
+            let centerY = origin.y + (size.height / 2)
+            return Point(x: centerX, y: centerY)
+        }
+        set {
+            origin.x = newValue.x - (size.width / 2)
+            origin.y = newValue.y - (size.height / 2)
+        }
+    }
+}
+// 简化 Getter 声明
+struct CompactRect {
+    var origin = Point()
+    var size = Size()
+    var center: Point {
+        get {
+            Point(x: origin.x + (size.width / 2),
+                  y: origin.y + (size.height / 2))
+        }
+        set {
+            origin.x = newValue.x - (size.width / 2)
+            origin.y = newValue.y - (size.height / 2)
+        }
+    }
+}
+// 只读计算属性
+struct Cuboid {
+    var width = 0.0, height = 0.0, depth = 0.0
+    var volume: Double {
+        return width * height * depth
+    }
+}
+let fourByFiveByTwo = Cuboid(width: 4.0, height: 5.0, depth: 2.0)
+// 属性观察器
+class StepCounter {
+    var totalSteps: Int = 0 {
+        willSet(newTotalSteps) {
+            print("将 totalSteps 的值设置为 \(newTotalSteps)")
+        }
+        didSet {
+            if totalSteps > oldValue  {
+                print("增加了 \(totalSteps - oldValue) 步")
+            }
+        }
+    }
+}
+// 属性包装器
+@propertyWrapper
+struct TwelveOrLess {
+    private var number: Int
+    init() { self.number = 0 }
+    var wrappedValue: Int {
+        get { return number }
+        set { number = min(newValue, 12) }
+    }
+}
+struct SmallRectangle {
+    @TwelveOrLess var height: Int
+    @TwelveOrLess var width: Int
+}
+
+var rectangle = SmallRectangle()
+print(rectangle.height)
+// 打印 "0"
+
+rectangle.height = 10
+print(rectangle.height)
+// 打印 "10"
+
+rectangle.height = 24
+print(rectangle.height)
+// 打印 "12"
+
+// 设置属性包装器的初始值
+
+//@propertyWrapper
+//struct SmallNumber {
+//    private var maximum: Int
+//    private var number: Int
+//
+//    var wrappedValue: Int {
+//        get { return number }
+//        set { number = min(newValue, maximum) }
+//    }
+//
+//    init() {
+//        maximum = 12
+//        number = 0
+//    }
+//    init(wrappedValue: Int) {
+//        maximum = 12
+//        number = min(wrappedValue, maximum)
+//    }
+//    init(wrappedValue: Int, maximum: Int) {
+//        self.maximum = maximum
+//        number = min(wrappedValue, maximum)
+//    }
+//}
+
+//struct ZeroRectangle {
+//    @SmallNumber var height: Int
+//    @SmallNumber var width: Int
+//}
+//
+//var zeroRectangle = ZeroRectangle()
+//print(zeroRectangle.height, zeroRectangle.width)
+//
+//struct UnitRectangle {
+//    @SmallNumber var height: Int = 1
+//    @SmallNumber var width: Int = 1
+//}
+//
+//var unitRectangle = UnitRectangle()
+//print(unitRectangle.height, unitRectangle.width)
+
+//struct NarrowRectangle {
+//    @SmallNumber(wrappedValue: 2, maximum: 5) var height: Int
+//    @SmallNumber(wrappedValue: 3, maximum: 4) var width: Int
+//}
+//
+//var narrowRectangle = NarrowRectangle()
+//print(narrowRectangle.height, narrowRectangle.width)
+//// 打印 "2 3"
+//
+//narrowRectangle.height = 100
+//narrowRectangle.width = 100
+//print(narrowRectangle.height, narrowRectangle.width)
+//// 打印 "5 4"
+//struct MixedRectangle {
+//    @SmallNumber var height: Int = 1
+//    @SmallNumber(maximum: 9) var width: Int = 2
+//    @SmallNumber(wrappedValue: 2, maximum: 9) var width1: Int
+//}
+
+// 从属性包装器中呈现一个值
+@propertyWrapper
+struct SmallNumber {
+    private var number: Int
+    var projectedValue: Bool
+    init() {
+        self.number = 0
+        self.projectedValue = false
+    }
+    var wrappedValue: Int {
+        get { return number }
+        set {
+            if newValue > 12 {
+                number = 12
+                projectedValue = true
+            } else {
+                number = newValue
+                projectedValue = false
+            }
+        }
+    }
+}
+struct SomeStructure {
+    @SmallNumber var someNumber: Int
+}
+var someStructure = SomeStructure()
+
+someStructure.someNumber = 4
+print(someStructure.$someNumber)
+//// 打印 "false"
+//
+//someStructure.someNumber = 55
+//print(someStructure.$someNumber)
+//// 打印 "true"
+
+// 全局变量和局部变量
+
+// 类型属性 (静态属性)
+// 类型属性语法 静态属性
+//struct SomeStructure1 {
+//    static var storedTypeProperty = "Some value."
+//    static var computedTypeProperty: Int {
+//        return 1
+//    }
+//}
+//enum SomeEnumeration {
+//    static var storedTypeProperty = "Some value."
+//    static var computedTypeProperty: Int {
+//        return 6
+//    }
+//}
+//class SomeClass {
+//    static var storedTypeProperty = "Some value."
+//    static var computedTypeProperty: Int {
+//        return 27
+//    }
+//    class var overrideableComputedTypeProperty: Int {
+//        return 107
+//    }
+//}
+// 获取和设置类型属性的值
+//print(SomeStructure.storedTypeProperty)
+//SomeStructure.storedTypeProperty = "Another value."
