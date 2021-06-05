@@ -974,3 +974,214 @@ print(someStructure.$someNumber)
 // 获取和设置类型属性的值
 //print(SomeStructure.storedTypeProperty)
 //SomeStructure.storedTypeProperty = "Another value."
+
+/**
+ 方法----------------------
+ */
+
+// 实例方法
+
+class Counter {
+    var count = 0
+    func increment() {
+        count += 1
+    }
+    func increment(by amount: Int) {
+        count += amount
+    }
+    func reset() {
+        count = 0
+    }
+}
+let counter = Counter()
+// 初始计数值是0
+counter.increment()
+// 计数值现在是1
+counter.increment(by: 5)
+// 计数值现在是6
+counter.reset()
+
+// self 属性
+
+// 在实例方法中修改值类型  mutating 可变
+struct Point1 {
+    var x = 0.0, y = 0.0
+    mutating func moveBy(x deltaX: Double, y deltaY: Double) {
+        x += deltaX
+        y += deltaY
+    }
+}
+var somePoint = Point1(x: 1.0, y: 1.0)
+somePoint.moveBy(x: 2.0, y: 3.0)
+
+// 在可变方法中给 self 赋值
+//struct Point {
+//    var x = 0.0, y = 0.0
+//    mutating func moveBy(x deltaX: Double, y deltaY: Double) {
+//        self = Point(x: x + deltaX, y: y + deltaY)
+//    }
+//}
+// 枚举的可变方法可以把 self 设置为同一枚举类型中不同的成员：
+//enum TriStateSwitch {
+//    case off, low, high
+//    mutating func next() {
+//        switch self {
+//        case .off:
+//            self = .low
+//        case .low:
+//            self = .high
+//        case .high:
+//            self = .off
+//        }
+//    }
+//}
+//var ovenLight = TriStateSwitch.low
+//ovenLight.next()
+//ovenLight.next()
+
+// 类型方法
+// 在方法的 func 关键字之前加上关键字 static，来指定类型方法。类还可以用关键字 class 来指定，从而允许子类重写父类该方法的实现。
+// 在类型方法的方法体（body）中，self 属性指向这个类型本身，而不是类型的某个实例
+
+/**
+ 下标-----------------------------
+ */
+
+// 下标语法
+struct TimesTable {
+    let multiplier: Int
+    subscript(index: Int) -> Int {
+        return multiplier * index
+    }
+}
+let threeTimesTable = TimesTable(multiplier: 3)
+// 下标用法
+var numberOfLegs = ["spider": 8, "ant": 6, "cat": 4]
+numberOfLegs["bird"] = 2
+
+// 下标选项
+// 下标可以接受任意数量的入参，并且这些入参可以是任何类型。下标的返回值也可以是任意类型。
+
+struct Matrix {
+    let rows: Int, columns: Int
+    var grid: [Double]
+    init(rows: Int, columns: Int) {
+        self.rows = rows
+        self.columns = columns
+        grid = Array(repeating: 0.0, count: rows * columns)
+    }
+    func indexIsValid(row: Int, column: Int) -> Bool {
+        return row >= 0 && row < rows && column >= 0 && column < columns
+    }
+    subscript(row: Int, column: Int) -> Double {
+        get {
+            assert(indexIsValid(row: row, column: column), "Index out of range")
+            return grid[(row * columns) + column]
+        }
+        set {
+            assert(indexIsValid(row: row, column: column), "Index out of range")
+            grid[(row * columns) + column] = newValue
+        }
+    }
+}
+var matrix = Matrix(rows: 2, columns: 2)
+matrix[0, 1] = 1.5
+matrix[1, 0] = 3.2
+
+// 类型下标
+enum Planet: Int {
+    case mercury = 1, venus, earth, mars, jupiter, saturn, uranus, neptune
+    static subscript(n: Int) -> Planet {
+        return Planet(rawValue: n)!
+    }
+}
+let mars = Planet[4]
+print(mars)
+
+/**
+ 继承 --------------------
+ */
+class Vehicle {
+    var currentSpeed = 0.0
+    var description: String {
+        return "traveling at \(currentSpeed) miles per hour"
+    }
+    func makeNoise() {
+        // 什么也不做——因为车辆不一定会有噪音
+    }
+}
+class Bicycle: Vehicle {
+    var hasBasket = false
+}
+let bicycle = Bicycle()
+print(bicycle.description)
+
+// 重写
+// super 访问父类
+// 重写方法
+class Train: Vehicle {
+    override func makeNoise() {
+        print("Choo Choo")
+    }
+}
+// 重写属性
+// 重写属性的 Getters 和 Setters
+class Car: Vehicle {
+    var gear = 1
+    override var description: String {
+        return super.description + " in gear \(gear)"
+    }
+}
+// 重写属性观察器
+class AutomaticCar: Car {
+    override var currentSpeed: Double {
+        didSet {
+            gear = Int(currentSpeed / 10.0) + 1
+        }
+    }
+}
+
+// 防止被重写
+// 通过把方法，属性或下标标记为 final 来防止它们被重写
+
+/**
+  构造过程 ---------------------
+ */
+// 存储属性的初始赋值
+//  构造器
+//init() {
+//    // 在此处执行构造过程
+//}
+
+// 自定义构造过程
+// 形参的构造过程
+struct Celsius {
+    var temperatureInCelsius: Double
+    init(fromFahrenheit fahrenheit: Double) {
+        temperatureInCelsius = (fahrenheit - 32.0) / 1.8
+    }
+    init(fromKelvin kelvin: Double) {
+        temperatureInCelsius = kelvin - 273.15
+    }
+}
+// 形参命名和实参标签
+// 不带实参标签的构造器形参
+// 可选属性类型 可选类型的属性将自动初始化为 nil
+// 构造过程中常量属性的赋值
+class SurveyQuestion {
+    let text: String
+    var response: String?
+    init(text: String) {
+        self.text = text
+    }
+    func ask() {
+        print(text)
+    }
+}
+let beetsQuestion = SurveyQuestion(text: "How about beets?")
+beetsQuestion.ask()
+//beetsQuestion.text = "sss"
+// 默认构造器
+// 结构体的逐一成员构造器
+// 值类型的构造器代理
+
