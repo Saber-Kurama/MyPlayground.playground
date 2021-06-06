@@ -1184,4 +1184,204 @@ beetsQuestion.ask()
 // 默认构造器
 // 结构体的逐一成员构造器
 // 值类型的构造器代理
+struct Rect1 {
+    var origin = Point()
+    var size = Size()
+    init() {}
+
+    init(origin: Point, size: Size) {
+        self.origin = origin
+        self.size = size
+    }
+    // 构造器代理代理 调用其他的构造器
+    init(center: Point, size: Size) {
+        let originX = center.x - (size.width / 2)
+        let originY = center.y - (size.height / 2)
+        self.init(origin: Point(x: originX, y: originY), size: size)
+    }
+}
+// 类的继承和构造过程
+// 指定构造器和便利构造器
+//init(parameters) {
+//    statements
+//}
+//convenience init(parameters) {
+//    statements
+//}
+// 类类型的构造器代理
+
+// 两段式构造过程
+// 构造器的自动继承
+// 1. 如果子类没有定义任何指定构造器，它将自动继承父类所有的指定构造器。
+// 2. 如果子类提供了所有父类指定构造器的实现——无论是通过规则 1 继承过来的，还是提供了自定义实现——它将自动继承父类所有的便利构造器。
+// 构造器的继承和重写
+class Vehicle1 {
+    var numberOfWheels = 0
+    var description: String {
+        numberOfWheels = 3
+        return "\(numberOfWheels) wheel(s)"
+    }
+}
+let vehicle = Vehicle1()
+print("Vehicle: \(vehicle.description)")
+
+class Bicycle1: Vehicle1 {
+
+//    override var description: String {
+//        return " in gear"
+//    }
+//    override init() {
+//        super.init()
+//        numberOfWheels = 2
+//    }
+}
+let bicycle1 = Bicycle1()
+print("bicycle1: \(bicycle1.description)")
+// 指定构造器和便利构造器实践
+class Food {
+    var name: String
+    init(name: String) {
+        self.name = name
+    }
+
+    convenience init() {
+        self.init(name: "[Unnamed]")
+    }
+}
+class RecipeIngredient: Food {
+    var quantity: Int
+
+    init(name: String, quantity: Int) {
+        self.quantity = quantity
+        super.init(name: name)
+    }
+    override convenience init(name: String) {
+        self.init(name: name, quantity: 10)
+    }
+}
+
+class ShoppingListItem: RecipeIngredient {
+    var purchased = false
+    var description: String {
+        var output = "\(quantity) x \(name)"
+        output += purchased ? " ✔" : " ✘"
+        return output
+    }}
+
+let sl1 = ShoppingListItem()
+print(sl1.name)
+print(sl1.quantity)
+print(sl1.description)
+// 可失败构造器
+// 其语法为在 init 关键字后面添加问号（init?）
+// 枚举类型的可失败构造器
+enum TemperatureUnit {
+    case Kelvin, Celsius, Fahrenheit
+    init?(symbol: Character) {
+        switch symbol {
+        case "K":
+            self = .Kelvin
+        case "C":
+            self = .Celsius
+        case "F":
+            self = .Fahrenheit
+        default:
+            return nil
+        }
+    }
+}
+let fahrenheitUnit = TemperatureUnit(symbol: "F")
+if fahrenheitUnit != nil {
+    print("This is a defined temperature unit, so initialization succeeded.")
+}
+// 带原始值的枚举类型的可失败构造器
+// 带原始值的枚举类型会自带一个可失败构造器 init?(rawValue:)
+// 构造失败的传递
+// 重写一个可失败构造器
+// 必要构造器
+// 在类的构造器前添加 required 修饰符表明所有该类的子类都必须实现该构造器
+// 通过闭包或函数设置属性的默认值
+//class SomeClass {
+//    let someProperty: SomeType = {
+//        // 在这个闭包中给 someProperty 创建一个默认值
+//        // someValue 必须和 SomeType 类型相同
+//        return someValue
+//    }()
+//}
+
+/**
+ 析构过程 ---------------------------
+ */
+
+/**
+ 可选链 -----------------------------
+ */
+
+/**
+ 嵌套类型 -----------------------------
+ */
+
+struct BlackjackCard {
+
+    // 嵌套的 Suit 枚举
+    enum Suit: Character {
+        case spades = "♠", hearts = "♡", diamonds = "♢", clubs = "♣"
+    }
+
+    // 嵌套的 Rank 枚举
+    enum Rank: Int {
+        case two = 2, three, four, five, six, seven, eight, nine, ten
+        case jack, queen, king, ace
+        struct Values {
+            let first: Int, second: Int?
+        }
+        var values: Values {
+            switch self {
+            case .ace:
+                return Values(first: 1, second: 11)
+            case .jack, .queen, .king:
+                return Values(first: 10, second: nil)
+            default:
+                return Values(first: self.rawValue, second: nil)
+            }
+        }
+    }
+
+    // BlackjackCard 的属性和方法
+    let rank: Rank, suit: Suit
+    var description: String {
+        var output = "suit is \(suit.rawValue),"
+        output += " value is \(rank.values.first)"
+        if let second = rank.values.second {
+            output += " or \(second)"
+        }
+        return output
+    }
+}
+
+//引用嵌套类型
+let heartsSymbol = BlackjackCard.Suit.hearts.rawValue
+// 红心符号为“♡”
+
+/**
+ 扩展 ------------------
+ */
+// 扩展可以给一个现有的类，结构体，枚举，还有协议添加新的功能。它还拥有不需要访问被扩展类型源代码就能完成扩展的能力（即逆向建模）。
+
+/**
+ 协议 --------------------
+ */
+// 协议语法
+//protocol SomeProtocol {
+//    // 这里是协议的定义部分
+//}
+//
+//struct SomeStructure: FirstProtocol, AnotherProtocol {
+//    // 这里是结构体的定义部分
+//}
+//class SomeClass: SomeSuperClass, FirstProtocol, AnotherProtocol {
+//    // 这里是类的定义部分
+//}
+
+// 属性要求
 
